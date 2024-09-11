@@ -1,0 +1,62 @@
+[
+  {
+    "apiname": "ACH25",
+    "name": "Margit, the Fell Omen"
+  },
+  {
+    "apiname": "ACH04",
+    "name": "Godrick the Grafted"
+  },
+  {
+    "apiname": "ACH26",
+    "name": "Red Wolf of Radagon"
+  },
+  {
+    "apiname": "ACH18",
+    "name": "Rennala, Queen of the Full Moon"
+  },
+  {
+    "apiname": "ACH32",
+    "name": "Royal Knight Loretta"
+  },
+  {
+    "apiname": "ACH05",
+    "name": "Starscourge Radahn"
+  },
+  {
+    "apiname": "ACH07",
+    "name": "Rykard, Lord of Blasphemy"
+  },
+  {
+    "apiname": "ACH29",
+    "name": "Godfrey, First Elden Lord (Golden Shade)"
+  },
+  {
+    "apiname": "ACH06",
+    "name": "Morgot, the Omen King"
+  },
+  {
+    "apiname": "ACH21",
+    "name": "Fire Giant"
+  },
+  {
+    "apiname": "ACH20",
+    "name": "Godskin Duo"
+  },
+  {
+    "apiname": "ACH10",
+    "name": "Maliketh, the Black Blade"
+  },
+  {
+    "apiname": "ACH33",
+    "name": "Astel, Naturalborn of the Void"
+  },
+  {
+    "apiname": "ACH11",
+    "name": "Godfrey, First Elden Lord and Hoarah Loux"
+  },
+  {
+    "apiname": ["ACH01", "ACH02", "ACH03"],
+    "name": "Elden Beast"
+  }
+]
