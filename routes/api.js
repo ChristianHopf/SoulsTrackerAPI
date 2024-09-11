@@ -336,7 +336,20 @@ router.get("/playtime/:steamid/:appid", async (req, res, next) => {
  */
 router.get("/bosses/:steamid/:appid", async (req, res, next) => {
   try {
-    const bosses = require("../bosses.json");
+    let bosses;
+    switch (req.params.appid) {
+      case "570940":
+        bosses = require("../schemas/bosses/darksoulsremastered.json");
+        break;
+      case "1245620":
+        bosses = require("../schemas/bosses/eldenring.json");
+        break;
+      default:
+        // Replace default case with an error response
+        bosses = require("../schemas/bosses/darksoulsremastered.json");
+        break;
+    }
+
     const response = await fetch(
       `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/?appid=${req.params.appid}&key=${process.env.API_KEY}&steamid=${req.params.steamid}`
     );
@@ -349,6 +362,7 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
     }
     const data = await response.json();
     const achievements = data.playerstats.achievements;
+    console.log(achievements);
     // Loop through bosses in order. If a boss's achievement is not completed
     // in the player's achievements data, that's the next boss, and the boss at index-1
     // is the recent boss.
@@ -356,6 +370,31 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
       let currentBoss = achievements.find(
         (achievement) => achievement.apiname === boss.apiname
       );
+      // Each game's bosses json only includes bosses with achievements associated,
+      // so if currentBoss is undefined, it's a special case. Right now the only one
+      // is with Elden Ring, where defeating the Elden Beast leads to 3 different
+      // endings, each with their own achievement.
+      if (typeof currentBoss === "undefined") {
+        possibleAchievements = achievements.filter((achievement) =>
+          boss.apiname.includes(achievement.apiname)
+        );
+        // If at least one of the achievements for beating the Elden Beast has been achieved,
+        // That's the recent boss
+        for (const achievement of possibleAchievements) {
+          if (achievement.achieved) {
+            // For this case, return a response. But if it's the case in Dark Souls 2 or 3,
+            // or other future additions to this app, that there exists a boss with multiple
+            // possible achievements that is NOT the final boss, that might not necessarily be
+            // the recent boss, and this method would need refactoring
+            return res.json({
+              data: {
+                complete: true,
+                recent_boss: boss.name,
+              },
+            });
+          }
+        }
+      }
       if (!currentBoss.achieved) {
         return res.json({
           data: {
