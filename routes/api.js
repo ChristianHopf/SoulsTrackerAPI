@@ -461,7 +461,19 @@ router.get("/achievements/:steamid/:appid", async (req, res, next) => {
     }
     const data = await response.json();
     const playerAchievements = data.playerstats.achievements;
-    const schema = require("../darksoulsremastered_schema.json");
+    let schema;
+    switch (req.params.appid) {
+      case "570940":
+        schema = require("../schemas/darksoulsremastered_schema.json");
+        break;
+      case "1245620":
+        schema = require("../schemas/eldenring_schema.json");
+        break;
+      default:
+        // Replace default case with an error response
+        schema = require("../schemas/darksoulsremasteredschema.json");
+        break;
+    }
 
     // For each achievement:
     // - if its entry in achievements is achieved
