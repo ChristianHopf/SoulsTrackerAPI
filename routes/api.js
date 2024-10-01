@@ -18,73 +18,6 @@ const router = express.Router();
 const SUPPORTED_GAMES_FILTER =
   "appids_filter[0]=570940&appids_filter[1]=236430&appids_filter[2]=374320&appids_filter[3]=1245620";
 
-// Will need:
-// - API key
-// - steamid (64 bit user id)
-// - appid (game id)
-// https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?appid=570940&key=D6563AA56822CAF6AC96C5B97018B5E9&steamid=76561198099631791
-// My steamid: 76561198045534521
-// Fillup steamid: 76561198099631791
-// https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1
-// router.get("/getachievements/:steamid/:appid", async (req, res, next) => {
-//   try {
-//     const playerAchievementsResponse = await fetch(
-//       `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/?appid=570940&key=${process.env.API_KEY}&steamid=${req.params.steamid}`
-//     );
-//     if (!playerAchievementsResponse.ok) {
-//       console.error(
-//         `Error: Received status ${playerAchievementsResponse.status}`
-//       );
-//       return res.status(playerAchievementsResponse.status).json({
-//         error: true,
-//         message: `Failed to fetch data with status ${playerAchievementsResponse.status}`,
-//       });
-//     }
-//     const achievementsSchemaResponse = await fetch(
-//       `https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?appid=570940&key=${process.env.API_KEY}`
-//     );
-//     if (!achievementsSchemaResponse.ok) {
-//       console.error(
-//         `Error: Received status ${achievementsSchemaResponse.status}`
-//       );
-//       return res.status(achievementsSchemaResponse.status).json({
-//         error: true,
-//         message: `Failed to fetch data with status ${achievementsSchemaResponse.status}`,
-//       });
-//     }
-//     const achievements = await playerAchievementsResponse.json();
-//     const schema = await achievementsSchemaResponse.json();
-
-//     // For each achievement:
-//     // - if its entry in achievements is achieved
-//     // - build a new object with its desired schema info
-//     // - push to result
-//     result = [];
-//     schema.game.availableGameStats.achievements.forEach(function (
-//       achievement,
-//       index
-//     ) {
-//       let playerAchievement = achievements.playerstats.achievements[index];
-//       if (playerAchievement.achieved) {
-//         let resultAchievement = {
-//           name: achievement.name,
-//           displayName: achievement.displayName,
-//           description: achievement.description,
-//           unlocktime: playerAchievement.unlocktime,
-//           icon: achievement.icon,
-//         };
-//         result.push(resultAchievement);
-//       }
-//     });
-//     // console.log(result[1].unlocktime > result[2].unlocktime);
-//     result.sort(({ unlocktime: a }, { unlocktime: b }) => b - a);
-//     // console.log(result);
-//     res.json(result);
-//   } catch (err) {
-//     next(err);
-//   }
-// });
-
 /**
  * Usage: GET /user-profile/:steamid
  * Route params:
@@ -152,20 +85,35 @@ router.get("/user-profile/:steamid", async (req, res, next) => {
  * - steamid (ex. 76561198099631791)
  * Returns list of all games in supportedgames.json that are in the library of the user with the given steamid,
  * in the following form:
- * [
- *   {
- *     name: "DARK SOULS: REMASTERED",
- *     appid: 570940
- *   }
- *     name: "Elden Ring",
- *     appid: 1245620
- *   }
- * ]
  * Uses Steam API endpoint:
  * https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=APIKEY&steamid=steamid&include_appinfo=1&include_played_free_games=1&appids_filter=[570940,...,1245620]&include_free_sub=1&language=english&include_extended_appinfo=0&format=json
  * - Query params:
  *   - key: API key
  *   - steamids: list of steamids (could be a list with multiple steamids, but we only want to fetch data for one)
+ * STEAM API RESPONSE:
+ * {
+  "response": {
+    "game_count": 1,
+    "games": [
+      {
+        "appid": 570940,
+        "name": "DARK SOULS™: REMASTERED",
+        "playtime_2weeks": 649,
+        "playtime_forever": 4206,
+        "img_icon_url": "d74cfa4f3a2070f45ad8ce44e5f61a6507ee00b6",
+        "has_community_visible_stats": true
+      }
+    ]
+  }
+}
+ * RESPONSE:
+ * [
+  {
+    "id": "dark-souls-remastered",
+    "name": "DARK SOULS™: REMASTERED",
+    "appid": 570940
+  }
+]
  */
 
 router.get("/owned-games/:steamid", async (req, res, next) => {
@@ -236,7 +184,7 @@ router.get("/owned-games/:steamid", async (req, res, next) => {
  *   - key: API key
  *   - steamid: user's steamid
  *   - appids_filter[0]: appid (appids_filter could be a list with multiple appids, but we only want to fetch data for one)
- * Steam API response:
+ * STEAM API RESPONSE:
  * {
   "response": {
     "game_count": 1,
@@ -325,6 +273,26 @@ router.get("/playtime/:steamid/:appid", async (req, res, next) => {
  *   - key: API key
  *   - steamid
  *   - appid
+ * STEAM API RESPONSE:
+ * {
+    "playerstats": {
+      "steamID": "76561198099631791",
+      "gameName": "DARK SOULS™: REMASTERED",
+      "achievements": [
+        {
+          "apiname": "ACHIEVEMENT_FRPG_ACHIEVEMENTS_00",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "ACHIEVEMENT_FRPG_ACHIEVEMENTS_01",
+          "achieved": 1,
+          "unlocktime": 1726438602
+        },
+        ...,
+      ],
+    },
+* }
  * RESPONSE:
  * {
  *   "response": {
@@ -427,6 +395,26 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
  *   - key: API key
  *   - steamid
  *   - appid
+ * STEAM API RESPONSE:
+ * {
+    "playerstats": {
+      "steamID": "76561198099631791",
+      "gameName": "DARK SOULS™: REMASTERED",
+      "achievements": [
+        {
+          "apiname": "ACHIEVEMENT_FRPG_ACHIEVEMENTS_00",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "ACHIEVEMENT_FRPG_ACHIEVEMENTS_01",
+          "achieved": 1,
+          "unlocktime": 1726438602
+        },
+        ...,
+      ],
+    },
+  * }
  * RESPONSE:
 {
   "response": {
