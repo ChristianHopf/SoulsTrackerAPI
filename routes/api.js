@@ -390,11 +390,16 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
  * Route params:
  * - steamid (ex. 76561198099631791)
  * - appid (ex. 570940 for Dark Souls Remastered)
- * Uses Steam API endpoint: https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/?appid={req.params.appid}&key=${process.env.API_KEY}&steamid=${req.params.steamid}
+ * Uses Steam API endpoints:
+ * https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/?appid={req.params.appid}&key=${process.env.API_KEY}&steamid=${req.params.steamid}
  * - Query params:
  *   - key: API key
  *   - steamid
  *   - appid
+ * https://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid=570940&format=json
+ * - Query params:
+ *   - gameid (appid)
+ *   - format (json, xml)
  * STEAM API RESPONSE:
  * {
     "playerstats": {
@@ -437,6 +442,7 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
  */
 router.get("/achievements/:steamid/:appid", async (req, res, next) => {
   try {
+    // Player achievement data
     const response = await fetch(
       `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/?appid=${req.params.appid}&key=${process.env.API_KEY}&steamid=${req.params.steamid}`
     );
@@ -449,6 +455,8 @@ router.get("/achievements/:steamid/:appid", async (req, res, next) => {
     }
     const data = await response.json();
     const playerAchievements = data.playerstats.achievements;
+
+    // Game schema data (never changes)
     let schema;
     switch (req.params.appid) {
       case "570940":
@@ -463,9 +471,25 @@ router.get("/achievements/:steamid/:appid", async (req, res, next) => {
         break;
     }
 
+    // Global achievement percentages (rarity)
+    // Look into caching this somehow. These games aren't new, so the percentages aren't going to change often or by much.
+    const percentagesResponse = await fetch(
+      `https://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid=${req.params.appid}&format=json`
+    );
+    if (!percentagesResponse.ok) {
+      console.error(`Error: Received status ${percentagesResponse.status}`);
+      return res.status(percentagesResponse.status).json({
+        error: true,
+        message: `Failed to fetch data with status ${percentagesResponse.status}`,
+      });
+    }
+    const percentagesData = await percentagesResponse.json();
+    const percentages = percentagesData.achievementpercentages.achievements;
+
     // For each achievement:
     // - if its entry in achievements is achieved
     // - build a new object with its desired schema info
+    // - find its object in percentagesData.achievements and add its percent as 'rarity'
     // - push to result
     result = [];
     schema.game.availableGameStats.achievements.forEach(function (
@@ -473,6 +497,10 @@ router.get("/achievements/:steamid/:appid", async (req, res, next) => {
       index
     ) {
       if (playerAchievements[index].achieved) {
+        let percentage = percentages.find(
+          (percentage) => percentage.name === achievement.name
+        ).percent;
+
         let resultAchievement = {
           name: achievement.displayName,
           description: achievement.description,
@@ -480,6 +508,7 @@ router.get("/achievements/:steamid/:appid", async (req, res, next) => {
             playerAchievements[index].unlocktime * 1000
           ).toDateString(),
           icon: achievement.icon,
+          rarity: percentage,
         };
         result.push(resultAchievement);
       }
