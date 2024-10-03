@@ -508,7 +508,7 @@ router.get("/achievements/:steamid/:appid", async (req, res, next) => {
             playerAchievements[index].unlocktime * 1000
           ).toDateString(),
           icon: achievement.icon,
-          rarity: percentage,
+          rarity: percentage.toFixed(1),
         };
         result.push(resultAchievement);
       }
