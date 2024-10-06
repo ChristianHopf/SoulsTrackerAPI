@@ -504,9 +504,7 @@ router.get("/achievements/:steamid/:appid", async (req, res, next) => {
         let resultAchievement = {
           name: achievement.displayName,
           description: achievement.description,
-          unlocktime: new Date(
-            playerAchievements[index].unlocktime * 1000
-          ).toDateString(),
+          unlocktime: achievement.unlocktime,
           icon: achievement.icon,
           rarity: percentage.toFixed(1),
         };
