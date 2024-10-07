@@ -1,0 +1,78 @@
+[
+  {
+    "apiname": "ACH27",
+    "name": "Iudex Gundyr"
+  },
+  {
+    "apiname": "ACH28",
+    "name": "Vordt of the Boreal Valley"
+  },
+  {
+    "apiname": "ACH29",
+    "name": "Curse-rotted Greatwood"
+  },
+  {
+    "apiname": "ACH30",
+    "name": "Crystal Sage"
+  },
+  {
+    "apiname": "ACH31",
+    "name": "Deacons of the Deep"
+  },
+  {
+    "apiname": "ACH04",
+    "name": "Lords of Cinder: Abyss Watchers"
+  },
+  {
+    "apiname": "ACH32",
+    "name": "High Lord Wolnir"
+  },
+  {
+    "apiname": "ACH36",
+    "name": "Old Demon King"
+  },
+  {
+    "apiname": "ACH33",
+    "name": "Pontiff Sulyvahn"
+  },
+  {
+    "apiname": "ACH05",
+    "name": "Lord of Cinder: Yhorm the Giant"
+  },
+  {
+    "apiname": "ACH06",
+    "name": "Lord of Cinder: Aldrich, Devourer of Gods"
+  },
+  {
+    "apiname": "ACH34",
+    "name": "Dancer of the Boreal Valley"
+  },
+  {
+    "apiname": "ACH35",
+    "name": "Dragonslayer Armour"
+  },
+  {
+    "apiname": "ACH37",
+    "name": "Oceiros, the Consumed King"
+  },
+  {
+    "apiname": "ACH38",
+    "name": "Champion Gundyr"
+  },
+  {
+    "apiname": "ACH07",
+    "name": "Lord of Cinder: Lothric, Younger Prince"
+  },
+  {
+    "apiname": "ACH39",
+    "name": "Ancient Wyvern"
+  },
+  {
+    "apiname": "ACH40",
+    "name": "The Nameless King"
+  },
+  {
+    "apiname": ["ACH01", "ACH02", "ACH03"],
+    "name": "Soul of Cinder"
+  }
+]
