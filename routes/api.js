@@ -383,7 +383,7 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
     return res.json({
       response: {
         complete: true,
-        recent_boss: bosses[bosses.length - 1],
+        recent_boss: bosses[bosses.length - 1].name,
         prev_bosses: prevBosses.slice(0, prevBosses.length - 1),
       },
     });
