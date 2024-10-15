@@ -334,6 +334,8 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
     // Loop through bosses in order. If a boss's achievement is not completed
     // in the player's achievements data, that's the next boss, and the boss at index-1
     // is the recent boss.
+    // Also build up list of previous bosses (might want to look into giving this its own endpoint that's only fetched lazily when the user opens the list for the first time)
+    let prevBosses = [];
     for (const [index, boss] of bosses.entries()) {
       let currentBoss = achievements.find(
         (achievement) => achievement.apiname === boss.apiname
@@ -358,6 +360,7 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
               data: {
                 complete: true,
                 recent_boss: boss.name,
+                prev_bosses: prevBosses,
               },
             });
           }
@@ -369,15 +372,19 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
             complete: false,
             next_boss: boss.name,
             recent_boss: bosses[index - 1].name,
+            prev_bosses: prevBosses,
           },
         });
       }
+      prevBosses.push(boss.name);
     }
     // Exit the for loop: Player has defeated all bosses.
+    // Remove last boss from prev_bosses (just an arbitrary decision, keep final boss displayed on its own big line in place of recent boss)
     return res.json({
       response: {
         complete: true,
         recent_boss: bosses[bosses.length - 1],
+        prev_bosses: prevBosses.slice(0, prevBosses.length - 1),
       },
     });
   } catch (err) {
