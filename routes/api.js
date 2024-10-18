@@ -376,7 +376,7 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
           },
         });
       }
-      prevBosses.push(boss.name);
+      prevBosses.unshift(boss.name);
     }
     // Exit the for loop: Player has defeated all bosses.
     // Remove last boss from prev_bosses (just an arbitrary decision, keep final boss displayed on its own big line in place of recent boss)
@@ -384,7 +384,7 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
       response: {
         complete: true,
         recent_boss: bosses[bosses.length - 1].name,
-        prev_bosses: prevBosses.slice(0, prevBosses.length - 1),
+        prev_bosses: prevBosses.slice(1, prevBosses.length),
       },
     });
   } catch (err) {
