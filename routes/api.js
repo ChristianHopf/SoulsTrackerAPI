@@ -68,7 +68,6 @@ router.get("/user-profile/:steamid", async (req, res, next) => {
 
     // Return object with the steamid, personaname, and avatarmedium properties
     const user = data.response.players[0];
-    // console.log(data);
     res.json({
       steamid: req.params.steamid,
       personaname: user.personaname,
@@ -167,7 +166,6 @@ router.get("/owned-games/:steamid", async (req, res, next) => {
       };
       result.push(newGame);
     });
-    console.log(data);
     res.json(result);
   } catch (err) {
     next(err);
@@ -232,7 +230,6 @@ router.get("/playtime/:steamid/:appid", async (req, res, next) => {
       });
     }
     const data = await response.json();
-    console.log(data);
 
     // Add case where response is empty (some kind of error on Steam's side?)
 
@@ -330,7 +327,6 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
     }
     const data = await response.json();
     const achievements = data.playerstats.achievements;
-    console.log(achievements);
     // Loop through bosses in order. If a boss's achievement is not completed
     // in the player's achievements data, that's the next boss, and the boss at index-1
     // is the recent boss.
