@@ -238,22 +238,18 @@ router.get("/playtime/:steamid/:appid", async (req, res, next) => {
     // the playtime_2weeks property is absent
     data.response.games[0].playtime_2weeks
       ? res.json({
-          data: {
-            playtime_forever: (
-              data.response.games[0].playtime_forever / 60
-            ).toFixed(1),
-            playtime_2weeks: (
-              data.response.games[0].playtime_2weeks / 60
-            ).toFixed(1),
-          },
+          playtime_forever: (
+            data.response.games[0].playtime_forever / 60
+          ).toFixed(1),
+          playtime_2weeks: (
+            data.response.games[0].playtime_2weeks / 60
+          ).toFixed(1),
         })
       : res.json({
-          data: {
-            playtime_forever: (
-              data.response.games[0].playtime_forever / 60
-            ).toFixed(1),
-            playtime_2weeks: 0,
-          },
+          playtime_forever: (
+            data.response.games[0].playtime_forever / 60
+          ).toFixed(1),
+          playtime_2weeks: 0,
         });
   } catch (err) {
     next(err);
@@ -353,23 +349,19 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
             // possible achievements that is NOT the final boss, that might not necessarily be
             // the recent boss, and this method would need refactoring
             return res.json({
-              data: {
-                complete: true,
-                recent_boss: boss.name,
-                prev_bosses: prevBosses,
-              },
+              complete: true,
+              recent_boss: boss.name,
+              prev_bosses: prevBosses,
             });
           }
         }
       }
       if (!currentBoss.achieved) {
         return res.json({
-          data: {
-            complete: false,
-            next_boss: boss.name,
-            recent_boss: bosses[index - 1].name,
-            prev_bosses: prevBosses,
-          },
+          complete: false,
+          next_boss: boss.name,
+          recent_boss: bosses[index - 1].name,
+          prev_bosses: prevBosses,
         });
       }
       prevBosses.unshift(boss.name);
@@ -377,11 +369,9 @@ router.get("/bosses/:steamid/:appid", async (req, res, next) => {
     // Exit the for loop: Player has defeated all bosses.
     // Remove last boss from prev_bosses (just an arbitrary decision, keep final boss displayed on its own big line in place of recent boss)
     return res.json({
-      response: {
-        complete: true,
-        recent_boss: bosses[bosses.length - 1].name,
-        prev_bosses: prevBosses.slice(1, prevBosses.length),
-      },
+      complete: true,
+      recent_boss: bosses[bosses.length - 1].name,
+      prev_bosses: prevBosses.slice(1, prevBosses.length),
     });
   } catch (err) {
     next(err);
@@ -494,7 +484,7 @@ router.get("/achievements/:steamid/:appid", async (req, res, next) => {
     // - build a new object with its desired schema info
     // - find its object in percentagesData.achievements and add its percent as 'rarity'
     // - push to result
-    result = [];
+    achievements = [];
     schema.game.availableGameStats.achievements.forEach(function (
       achievement,
       index
@@ -511,15 +501,11 @@ router.get("/achievements/:steamid/:appid", async (req, res, next) => {
           icon: achievement.icon,
           rarity: percentage.toFixed(1),
         };
-        result.push(resultAchievement);
+        achievements.push(resultAchievement);
       }
     });
 
-    return res.json({
-      data: {
-        result,
-      },
-    });
+    return res.json(achievements);
   } catch (err) {
     next(err);
   }
